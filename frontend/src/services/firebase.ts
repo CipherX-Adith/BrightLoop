@@ -11,12 +11,12 @@ import {
 import type { User } from "firebase/auth";
 
 export const firebaseConfig = {
-	projectId: "brightloop-billing",
-	appId: "1:387841426735:web:644555e2646859ab790dda",
-	storageBucket: "brightloop-billing.firebasestorage.app",
-	apiKey: "AIzaSyCiRTdWBGw3Z9O-5R8rDAE5pHFm-SNg6zQ",
-	authDomain: "brightloop-billing.firebaseapp.com",
-	messagingSenderId: "387841426735",
+	projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "brightloop-billing",
+	appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:387841426735:web:644555e2646859ab790dda",
+	storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "brightloop-billing.firebasestorage.app",
+	apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+	authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "brightloop-billing.firebaseapp.com",
+	messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "387841426735",
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -64,4 +64,3 @@ export async function getCurrentUserToken(): Promise<string | null> {
 		});
 	});
 }
-
