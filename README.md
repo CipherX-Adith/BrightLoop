@@ -159,12 +159,5 @@ management_system/
 │       ├── jobs/               # Scheduled billing worker
 │       ├── middleware/         # Authentication and authorization
 │       └── modules/            # Catalog, billing, payments, and other domains
-└── docs/images/                # Project screenshots and brand assets
+└── docs/                       # Project documentation
 ```
-
-## Screenshots
-
-- [Landing page](docs/images/landing-page.png)
-- [Plans and pricing](docs/images/plans-pricing.jpg)
-- [Sign-in](docs/images/auth-login.png)
-- [Account directory](docs/images/account-directory.png)
