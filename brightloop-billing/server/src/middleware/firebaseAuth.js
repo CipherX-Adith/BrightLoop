@@ -18,12 +18,25 @@ function firebaseAuthClient() {
   }
 
   let credential;
-  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
-  if (serviceAccountPath) {
-    const resolvedPath = path.resolve(process.cwd(), serviceAccountPath);
-    if (fs.existsSync(resolvedPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
-      credential = cert(serviceAccount);
+
+  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+  if (serviceAccountJson) {
+    const serviceAccount = JSON.parse(serviceAccountJson);
+    credential = cert(serviceAccount);
+  } else {
+    const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+
+    if (serviceAccountPath) {
+      const resolvedPath = path.resolve(process.cwd(), serviceAccountPath);
+
+      if (fs.existsSync(resolvedPath)) {
+        const serviceAccount = JSON.parse(
+          fs.readFileSync(resolvedPath, 'utf8')
+        );
+
+        credential = cert(serviceAccount);
+      }
     }
   }
 

@@ -9,6 +9,11 @@ describe('customer DTO for the live Neon customer schema', () => {
     companyName: 'Brightloop Customer',
     phone: '+91 98765 43210',
     billingAddress: '1 MG Road',
+    billingCity: 'Bengaluru',
+    billingStateCode: 'KA',
+    postalCode: '560001',
+    billingCountry: 'India',
+    gstin: '29ABCDE1234F1Z5',
     accountBalancePaise: 1200n,
     creditLimitPaise: 9000n,
     createdAt: new Date('2026-01-02T03:04:05.000Z'),
@@ -19,6 +24,7 @@ describe('customer DTO for the live Neon customer schema', () => {
   it('selects only live customer columns and required user fields', () => {
     assert.deepEqual(Object.keys(customerRecordSelect), [
       'id', 'userId', 'companyName', 'phone', 'billingAddress',
+      'billingCity', 'billingStateCode', 'postalCode', 'billingCountry', 'gstin',
       'accountBalancePaise', 'creditLimitPaise', 'createdAt', 'updatedAt',
     ]);
     assert.deepEqual(Object.keys(customerSelect), [...Object.keys(customerRecordSelect), 'user']);
@@ -33,10 +39,11 @@ describe('customer DTO for the live Neon customer schema', () => {
       phone: '+91 98765 43210',
       company: 'Brightloop Customer',
       address: '1 MG Road',
-      city: '',
-      state: '',
-      pincode: '',
-      gstin: '',
+      city: 'Bengaluru',
+      state: 'KA',
+      pincode: '560001',
+      country: 'India',
+      gstin: '29ABCDE1234F1Z5',
       createdAt: row.createdAt,
       status: 'active',
       accountBalancePaise: 1200n,
@@ -49,12 +56,17 @@ describe('customer DTO for the live Neon customer schema', () => {
   });
 
   it('uses safe empty values for nullable customer and user profile fields', () => {
-    const result = serializeCustomer({ ...row, companyName: null, phone: null, billingAddress: null, createdAt: null, user: { id: 'u', name: null, email: null, status: 'active' } });
+    const result = serializeCustomer({ ...row, companyName: null, phone: null, billingAddress: null, billingCity: null, billingStateCode: null, postalCode: null, billingCountry: null, gstin: null, createdAt: null, user: { id: 'u', name: null, email: null, status: 'active' } });
     assert.equal(result.name, '');
     assert.equal(result.email, '');
     assert.equal(result.phone, '');
     assert.equal(result.company, '');
     assert.equal(result.address, '');
+    assert.equal(result.city, '');
+    assert.equal(result.state, '');
+    assert.equal(result.pincode, '');
+    assert.equal(result.country, '');
+    assert.equal(result.gstin, '');
     assert.equal(result.createdAt, '');
     assert.equal(Object.values(result).includes(undefined), false);
   });
@@ -72,11 +84,7 @@ describe('customer DTO for the live Neon customer schema', () => {
     assert.deepEqual(parseCustomerInput({ company: 'Updated Co' }, true), { companyName: 'Updated Co' });
   });
 
-  it('rejects unsupported location fields and attempts to write user-owned fields', () => {
-    for (const field of ['city', 'state', 'pincode', 'gstin', 'billingCity', 'billingStateCode', 'postalCode']) {
-      assert.throws(() => parseCustomerInput({ userId: 'u', [field]: 'value' }), /not supported by the current database schema/);
-      assert.throws(() => parseCustomerInput({ [field]: 'value' }, true), /not supported by the current database schema/);
-    }
+  it('rejects attempts to write user-owned fields', () => {
     assert.throws(() => parseCustomerInput({ userId: 'u', name: 'Name' }), /belong to the linked user account/);
     assert.throws(() => parseCustomerInput({ status: 'inactive' }, true), /belong to the linked user account/);
   });

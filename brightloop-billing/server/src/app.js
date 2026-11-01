@@ -29,8 +29,12 @@ export const createApp = () => {
         return callback(null, true);
       }
 
-      // Check against configured allowlist
-      if (config.corsOrigins.includes(origin)) {
+      // Check against explicit configured allowlist (exact matches and trimmed trailing slashes)
+      const normalized = origin.replace(/\/+$/, '');
+      if (
+        config.corsOrigins.includes(origin) ||
+        config.corsOrigins.includes(normalized)
+      ) {
         return callback(null, true);
       }
 

@@ -15,7 +15,7 @@ const parseCorsOrigins = (rawOrigins) => {
   }
   const parsed = rawOrigins
     .split(',')
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean);
   return Array.from(new Set([...defaults, ...parsed]));
 };
