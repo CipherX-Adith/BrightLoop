@@ -2,7 +2,7 @@ import config from '../config/index.js';
 import { runBillingDate } from '../modules/billing/routes.js';
 import { asDateOnly } from '../modules/billing/calculations.js';
 
-function businessDate(now) {
+export function businessDate(now) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: config.businessTimeZone,
     year: 'numeric',

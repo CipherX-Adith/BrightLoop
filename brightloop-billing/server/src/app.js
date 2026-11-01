@@ -17,6 +17,8 @@ import portalRoutes from './modules/portal/routes.js';
 import authRoutes from './modules/auth/routes.js';
 import claimRoutes from './modules/payments/claims.js';
 import staffRoutes from './modules/staff/routes.js';
+import { runBillingDate } from './modules/billing/routes.js';
+import { businessDate } from './jobs/billingScheduler.js';
 
 export const createApp = () => {
   const app = express();
@@ -51,6 +53,25 @@ export const createApp = () => {
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+
+  // Vercel Cron invokes the HTTP app, not server.js, so scheduled billing has
+  // an authenticated function endpoint for serverless deployments.
+  app.get('/api/cron/billing', async (req, res, next) => {
+    const secret = process.env.CRON_SECRET;
+    if (!secret) return res.status(503).json({ success: false, message: 'Billing cron is not configured.' });
+    if (req.headers.authorization !== `Bearer ${secret}`) {
+      return res.status(401).json({ success: false, message: 'Unauthorized.' });
+    }
+    if (config.billingWorkerEnabled === false) {
+      return res.status(200).json({ success: true, data: { paused: true }, message: 'Scheduled billing is paused.' });
+    }
+    try {
+      const result = await runBillingDate(businessDate(new Date()));
+      return sendSuccess(res, result, 'Scheduled billing run completed.');
+    } catch (error) {
+      return next(error);
+    }
+  });
 
   // Public authentication routes (login, signup) mounted before requireFirebaseUser
   app.use('/api/v1', authRoutes);
