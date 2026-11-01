@@ -26,5 +26,12 @@
   },
   "devDependencies": {
     "prisma": "^7.10.1"
+  },
+  "overrides": {
+    "firebase-admin": {
+      "jwks-rsa": {
+        "jose": "5.10.0"
+      }
+    }
   }
 }
